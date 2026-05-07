@@ -1,98 +1,120 @@
 CREATE TABLE organism (
-  organism_id SERIAL PRIMARY KEY,
-  scientific_name TEXT NOT NULL,
-  common_name TEXT,
+  organism_id INT AUTO_INCREMENT PRIMARY KEY,
+  scientific_name VARCHAR(255) NOT NULL,
+  common_name VARCHAR(255),
   taxonomy_id INT,
   lineage TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE sample (
-  sample_id SERIAL PRIMARY KEY,
-  organism_id INT NOT NULL REFERENCES organism(organism_id),
-  sample_code TEXT NOT NULL UNIQUE,
+  sample_id INT AUTO_INCREMENT PRIMARY KEY,
+  organism_id INT NOT NULL,
+  sample_code VARCHAR(64) NOT NULL UNIQUE,
   collection_date DATE,
-  location TEXT,
-  tissue TEXT,
-  notes TEXT
-);
+  location VARCHAR(255),
+  tissue VARCHAR(255),
+  notes TEXT,
+  CONSTRAINT fk_sample_organism
+    FOREIGN KEY (organism_id) REFERENCES organism(organism_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE sequencing_run (
-  run_id SERIAL PRIMARY KEY,
-  sample_id INT NOT NULL REFERENCES sample(sample_id),
-  platform TEXT NOT NULL,
-  instrument TEXT,
-  library_prep TEXT,
+  run_id INT AUTO_INCREMENT PRIMARY KEY,
+  sample_id INT NOT NULL,
+  platform VARCHAR(128) NOT NULL,
+  instrument VARCHAR(128),
+  library_prep VARCHAR(255),
   run_date DATE,
-  read_type TEXT CHECK (read_type IN ('single', 'paired')),
-  notes TEXT
-);
+  read_type ENUM('single', 'paired'),
+  notes TEXT,
+  CONSTRAINT fk_run_sample
+    FOREIGN KEY (sample_id) REFERENCES sample(sample_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE sequence (
-  sequence_id SERIAL PRIMARY KEY,
-  sample_id INT NOT NULL REFERENCES sample(sample_id),
-  run_id INT REFERENCES sequencing_run(run_id),
-  format TEXT NOT NULL CHECK (format IN ('FASTA', 'GENBANK')),
+CREATE TABLE `sequence` (
+  sequence_id INT AUTO_INCREMENT PRIMARY KEY,
+  sample_id INT NOT NULL,
+  run_id INT,
+  format ENUM('FASTA', 'GENBANK') NOT NULL,
   description TEXT,
   length INT NOT NULL,
-  gc_percent NUMERIC(5, 2),
-  checksum TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+  gc_percent DECIMAL(5, 2),
+  checksum VARCHAR(64),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_sequence_sample
+    FOREIGN KEY (sample_id) REFERENCES sample(sample_id),
+  CONSTRAINT fk_sequence_run
+    FOREIGN KEY (run_id) REFERENCES sequencing_run(run_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE readset (
-  readset_id SERIAL PRIMARY KEY,
-  run_id INT NOT NULL REFERENCES sequencing_run(run_id),
-  format TEXT NOT NULL CHECK (format IN ('FASTQ')),
+  readset_id INT AUTO_INCREMENT PRIMARY KEY,
+  run_id INT NOT NULL,
+  format ENUM('FASTQ') NOT NULL,
   read_count BIGINT,
   read_length INT,
   paired BOOLEAN,
-  description TEXT
-);
+  description TEXT,
+  CONSTRAINT fk_readset_run
+    FOREIGN KEY (run_id) REFERENCES sequencing_run(run_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE file_asset (
-  file_id SERIAL PRIMARY KEY,
-  run_id INT REFERENCES sequencing_run(run_id),
-  sequence_id INT REFERENCES sequence(sequence_id),
-  readset_id INT REFERENCES readset(readset_id),
-  file_type TEXT NOT NULL CHECK (file_type IN ('raw', 'trimmed', 'assembly', 'annotation')),
-  format TEXT NOT NULL CHECK (format IN ('FASTA', 'FASTQ', 'GENBANK')),
-  uri TEXT NOT NULL,
+  file_id INT AUTO_INCREMENT PRIMARY KEY,
+  run_id INT,
+  sequence_id INT,
+  readset_id INT,
+  file_type ENUM('raw', 'trimmed', 'assembly', 'annotation') NOT NULL,
+  format ENUM('FASTA', 'FASTQ', 'GENBANK') NOT NULL,
+  uri VARCHAR(2048) NOT NULL,
   size_bytes BIGINT,
-  checksum TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+  checksum VARCHAR(64),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_file_run
+    FOREIGN KEY (run_id) REFERENCES sequencing_run(run_id),
+  CONSTRAINT fk_file_sequence
+    FOREIGN KEY (sequence_id) REFERENCES `sequence`(sequence_id),
+  CONSTRAINT fk_file_readset
+    FOREIGN KEY (readset_id) REFERENCES readset(readset_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE sequence_quality (
-  sequence_id INT PRIMARY KEY REFERENCES sequence(sequence_id),
-  avg_phred NUMERIC(5, 2),
-  q30_percent NUMERIC(5, 2),
-  n_percent NUMERIC(5, 2)
-);
+  sequence_id INT PRIMARY KEY,
+  avg_phred DECIMAL(5, 2),
+  q30_percent DECIMAL(5, 2),
+  n_percent DECIMAL(5, 2),
+  CONSTRAINT fk_seq_quality
+    FOREIGN KEY (sequence_id) REFERENCES `sequence`(sequence_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE run_quality (
-  run_id INT PRIMARY KEY REFERENCES sequencing_run(run_id),
-  avg_phred NUMERIC(5, 2),
-  q30_percent NUMERIC(5, 2),
-  dup_percent NUMERIC(5, 2),
-  adapter_percent NUMERIC(5, 2)
-);
+  run_id INT PRIMARY KEY,
+  avg_phred DECIMAL(5, 2),
+  q30_percent DECIMAL(5, 2),
+  dup_percent DECIMAL(5, 2),
+  adapter_percent DECIMAL(5, 2),
+  CONSTRAINT fk_run_quality
+    FOREIGN KEY (run_id) REFERENCES sequencing_run(run_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE annotation (
-  annotation_id SERIAL PRIMARY KEY,
-  sequence_id INT NOT NULL REFERENCES sequence(sequence_id),
-  source TEXT,
-  feature TEXT,
+  annotation_id INT AUTO_INCREMENT PRIMARY KEY,
+  sequence_id INT NOT NULL,
+  source VARCHAR(255),
+  feature VARCHAR(128),
   start_pos INT,
   end_pos INT,
-  strand CHAR(1) CHECK (strand IN ('+', '-')),
-  note TEXT
-);
+  strand ENUM('+', '-'),
+  note TEXT,
+  CONSTRAINT fk_annotation_sequence
+    FOREIGN KEY (sequence_id) REFERENCES `sequence`(sequence_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_sample_organism ON sample(organism_id);
 CREATE INDEX idx_run_sample ON sequencing_run(sample_id);
-CREATE INDEX idx_sequence_sample ON sequence(sample_id);
-CREATE INDEX idx_sequence_run ON sequence(run_id);
+CREATE INDEX idx_sequence_sample ON `sequence`(sample_id);
+CREATE INDEX idx_sequence_run ON `sequence`(run_id);
 CREATE INDEX idx_annotation_sequence ON annotation(sequence_id);
 CREATE INDEX idx_file_asset_run ON file_asset(run_id);
 CREATE INDEX idx_file_asset_sequence ON file_asset(sequence_id);

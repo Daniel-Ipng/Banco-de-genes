@@ -32,7 +32,7 @@ Relaciones clave:
 - FASTQ: se guarda el archivo en FileAsset y la calidad agregada en RunQuality; las lecturas individuales no se almacenan en la base.
 
 ## Esquema relacional
-Se propone PostgreSQL por soporte a integridad referencial e indices. El esquema se detalla en docs/schema.sql y el diagrama ER en docs/diagrama-er.mmd.
+Se propone MySQL 8.0 con InnoDB por soporte a integridad referencial e indices. El esquema se detalla en docs/schema.sql y el diagrama ER en docs/diagrama-er.mmd.
 
 ## Consultas propuestas
 Ejemplos en docs/consultas.sql:
