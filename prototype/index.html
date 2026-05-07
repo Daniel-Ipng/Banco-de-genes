@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BioSeq Atlas</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">BA</div>
+          <div>
+            <div class="title">BioSeq Atlas</div>
+            <div class="subtitle">Sistema de gestion de datos genomicos</div>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a class="active" href="#">Dashboard</a>
+          <a href="#">Secuencias</a>
+          <a href="#">Corridas</a>
+          <a href="#">Archivos</a>
+          <a href="#">Reportes</a>
+        </nav>
+        <div class="actions">
+          <button class="btn ghost">Importar</button>
+          <button class="btn primary">Nuevo analisis</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="panel">
+            <div class="panel-title">Filtros rapidos</div>
+            <div class="chip-row">
+              <span class="chip active">FASTA</span>
+              <span class="chip">GenBank</span>
+              <span class="chip">FASTQ</span>
+            </div>
+            <label class="field">
+              <span>Organismo</span>
+              <select>
+                <option>Todos</option>
+                <option>Homo sapiens</option>
+                <option>Arabidopsis thaliana</option>
+                <option>Escherichia coli</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Calidad minima (avg phred)</span>
+              <input type="range" min="10" max="40" value="30">
+            </label>
+            <label class="field">
+              <span>Longitud (bp)</span>
+              <div class="range-row">
+                <input type="number" value="500">
+                <span class="range-sep">a</span>
+                <input type="number" value="20000">
+              </div>
+            </label>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Estado de corridas</div>
+            <div class="status-row">
+              <div class="status ok"></div>
+              <div>
+                <div class="status-label">Activas</div>
+                <div class="status-value">8</div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="status warn"></div>
+              <div>
+                <div class="status-label">En revision</div>
+                <div class="status-value">3</div>
+              </div>
+            </div>
+            <div class="status-row">
+              <div class="status danger"></div>
+              <div>
+                <div class="status-label">Bloqueadas</div>
+                <div class="status-value">1</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <section class="hero reveal">
+            <div class="hero-text">
+              <div class="eyebrow">Laboratorio Genomico</div>
+              <h1>Explora secuencias, calidad y archivos en un solo lugar</h1>
+              <p>Busqueda rapida por organismo, longitud y calidad. Trazabilidad completa desde la muestra hasta el archivo.</p>
+              <div class="search-row">
+                <input type="search" placeholder="Buscar por codigo de muestra, gen o taxonomia">
+                <button class="btn primary">Buscar</button>
+              </div>
+            </div>
+            <div class="hero-metrics">
+              <div class="metric">
+                <div class="metric-label">Q30 promedio</div>
+                <div class="metric-value">92.7%</div>
+                <div class="metric-foot">Ultimas 24 h</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Reads procesados</div>
+                <div class="metric-value">12.4M</div>
+                <div class="metric-foot">FASTQ importados</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="cards">
+            <div class="card reveal">
+              <div class="card-title">Secuencias</div>
+              <div class="card-value">2,418</div>
+              <div class="card-sub">FASTA y GenBank validadas</div>
+            </div>
+            <div class="card reveal">
+              <div class="card-title">Corridas</div>
+              <div class="card-value">96</div>
+              <div class="card-sub">Ultimo mes</div>
+            </div>
+            <div class="card reveal">
+              <div class="card-title">Archivos</div>
+              <div class="card-value">1.8 TB</div>
+              <div class="card-sub">Almacenamiento activo</div>
+            </div>
+            <div class="card reveal">
+              <div class="card-title">Alertas</div>
+              <div class="card-value">4</div>
+              <div class="card-sub">Requieren revision</div>
+            </div>
+          </section>
+
+          <section class="table-card reveal">
+            <div class="table-head">
+              <div>
+                <div class="table-title">Secuencias recientes</div>
+                <div class="table-sub">Filtros aplicados: FASTA, calidad >= 30</div>
+              </div>
+              <div class="table-actions">
+                <button class="btn ghost">Exportar CSV</button>
+                <button class="btn ghost">Ver todo</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Muestra</th>
+                    <th>Formato</th>
+                    <th>Longitud</th>
+                    <th>Avg Phred</th>
+                    <th>Q30</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SEQ-1182</td>
+                    <td>S-1023</td>
+                    <td><span class="pill">FASTA</span></td>
+                    <td>15,223</td>
+                    <td>34.1</td>
+                    <td>93%</td>
+                    <td><span class="pill ok">Validada</span></td>
+                  </tr>
+                  <tr>
+                    <td>SEQ-1181</td>
+                    <td>S-1020</td>
+                    <td><span class="pill">GENBANK</span></td>
+                    <td>9,870</td>
+                    <td>32.8</td>
+                    <td>91%</td>
+                    <td><span class="pill ok">Validada</span></td>
+                  </tr>
+                  <tr>
+                    <td>SEQ-1179</td>
+                    <td>S-1011</td>
+                    <td><span class="pill">FASTA</span></td>
+                    <td>21,045</td>
+                    <td>29.4</td>
+                    <td>84%</td>
+                    <td><span class="pill warn">Revision</span></td>
+                  </tr>
+                  <tr>
+                    <td>SEQ-1174</td>
+                    <td>S-1008</td>
+                    <td><span class="pill">GENBANK</span></td>
+                    <td>4,290</td>
+                    <td>35.0</td>
+                    <td>95%</td>
+                    <td><span class="pill ok">Validada</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="detail-card reveal">
+            <div class="detail-head">
+              <div>
+                <div class="detail-title">Detalle de secuencia</div>
+                <div class="detail-sub">SEQ-1182 - Homo sapiens</div>
+              </div>
+              <div class="detail-actions">
+                <button class="btn ghost">Ver archivo</button>
+                <button class="btn primary">Anotar</button>
+              </div>
+            </div>
+            <div class="detail-grid">
+              <div>
+                <div class="label">Formato</div>
+                <div class="value">FASTA</div>
+              </div>
+              <div>
+                <div class="label">Longitud</div>
+                <div class="value">15,223 bp</div>
+              </div>
+              <div>
+                <div class="label">GC</div>
+                <div class="value">48.2%</div>
+              </div>
+              <div>
+                <div class="label">Checksum</div>
+                <div class="value">a7c4...f12</div>
+              </div>
+            </div>
+            <div class="quality">
+              <div class="quality-row">
+                <span>Avg Phred</span>
+                <span>34.1</span>
+              </div>
+              <div class="quality-bar">
+                <div class="quality-fill" style="width: 85%"></div>
+              </div>
+              <div class="quality-row">
+                <span>Q30</span>
+                <span>93%</span>
+              </div>
+              <div class="quality-bar">
+                <div class="quality-fill accent" style="width: 93%"></div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

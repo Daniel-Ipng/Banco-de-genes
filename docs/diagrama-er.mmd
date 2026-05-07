@@ -1,0 +1,92 @@
+erDiagram
+    ORGANISM ||--o{ SAMPLE : has
+    SAMPLE ||--o{ SEQUENCING_RUN : produces
+    SAMPLE ||--o{ SEQUENCE : yields
+    SEQUENCING_RUN ||--o{ READSET : generates
+    SEQUENCING_RUN ||--o{ FILE_ASSET : outputs
+    SEQUENCE ||--o{ FILE_ASSET : stored_as
+    SEQUENCE ||--|| SEQUENCE_QUALITY : quality
+    SEQUENCING_RUN ||--|| RUN_QUALITY : quality
+    SEQUENCE ||--o{ ANNOTATION : annotated_by
+
+    ORGANISM {
+        int organism_id PK
+        text scientific_name
+        text common_name
+        int taxonomy_id
+        text lineage
+        timestamp created_at
+    }
+    SAMPLE {
+        int sample_id PK
+        int organism_id FK
+        text sample_code
+        date collection_date
+        text location
+        text tissue
+        text notes
+    }
+    SEQUENCING_RUN {
+        int run_id PK
+        int sample_id FK
+        text platform
+        text instrument
+        text library_prep
+        date run_date
+        text read_type
+        text notes
+    }
+    SEQUENCE {
+        int sequence_id PK
+        int sample_id FK
+        int run_id FK
+        text format
+        int length
+        numeric gc_percent
+        text checksum
+        timestamp created_at
+    }
+    READSET {
+        int readset_id PK
+        int run_id FK
+        text format
+        bigint read_count
+        int read_length
+        boolean paired
+        text description
+    }
+    FILE_ASSET {
+        int file_id PK
+        int run_id FK
+        int sequence_id FK
+        int readset_id FK
+        text file_type
+        text format
+        text uri
+        bigint size_bytes
+        text checksum
+        timestamp created_at
+    }
+    SEQUENCE_QUALITY {
+        int sequence_id PK, FK
+        numeric avg_phred
+        numeric q30_percent
+        numeric n_percent
+    }
+    RUN_QUALITY {
+        int run_id PK, FK
+        numeric avg_phred
+        numeric q30_percent
+        numeric dup_percent
+        numeric adapter_percent
+    }
+    ANNOTATION {
+        int annotation_id PK
+        int sequence_id FK
+        text source
+        text feature
+        int start_pos
+        int end_pos
+        char strand
+        text note
+    }
